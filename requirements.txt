@@ -1,0 +1,14 @@
+pandas
+matplotlib
+seaborn
+openpyxl
+jupyter
+great_expectations
+scikit-learn
+plotly
+nbformat
+statsmodels
+prophet
+torch
+pytorch-lightning
+mlflow
