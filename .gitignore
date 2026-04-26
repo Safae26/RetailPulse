@@ -2,6 +2,7 @@ data/raw/
 data/processed/
 __pycache__/
 *.pyc
-notebooks/mlruns
-notebooks/checkpoints
+mlruns/
 models/
+venv/
+checkpoints/
