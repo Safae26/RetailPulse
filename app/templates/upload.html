@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Data Center — RetailPulse{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-12 pb-12">
+
+    <!-- Header -->
+    <div class="glass-card p-8 lg:p-12 relative overflow-hidden animate-in">
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl"></div>
+        <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
+            <div class="w-20 h-20 bg-brand-500/10 rounded-3xl flex items-center justify-center">
+                <i data-lucide="database" class="w-10 h-10 text-brand-500"></i>
+            </div>
+            <div class="text-center md:text-left flex-1">
+                <h1 class="text-4xl lg:text-5xl font-black dark:text-white text-slate-800 tracking-tight">
+                    Data <span class="text-brand-500">Center</span>
+                </h1>
+                <p class="text-lg text-slate-500 dark:text-slate-400 mt-2">
+                    Upload your custom retail datasets and witness instant AI intelligence.
+                </p>
+            </div>
+            <div class="flex items-center gap-4">
+                {% if is_custom %}
+                <div class="px-4 py-2 rounded-full bg-mint/10 text-mint text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span>
+                    Custom Data Active
+                </div>
+                <button onclick="resetData()" class="px-4 py-2 rounded-xl bg-slate-500/10 text-slate-500 text-xs font-black uppercase tracking-widest hover:bg-slate-500/20 transition-all">
+                    Reset to Default
+                </button>
+                {% else %}
+                <div class="px-4 py-2 rounded-full bg-slate-500/10 text-slate-500 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                    Default Dataset Active
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        
+        <!-- Upload Section -->
+        <div class="glass-card p-8 lg:p-10 space-y-8 animate-in" style="animation-delay: 0.1s">
+            <div class="flex items-center gap-3">
+                <i data-lucide="upload-cloud" class="text-brand-500"></i>
+                <h3 class="text-2xl font-black dark:text-white text-slate-800">Dataset Ingestion</h3>
+            </div>
+            
+            <div id="drop-zone" class="border-2 border-dashed border-slate-500/20 rounded-3xl p-12 text-center group hover:border-brand-500/50 transition-all cursor-pointer bg-slate-500/5 relative overflow-hidden">
+                <input type="file" id="fileInput" class="hidden" accept=".csv">
+                <div class="relative z-10 space-y-4">
+                    <div class="w-16 h-16 bg-brand-500/10 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                        <i data-lucide="file-up" class="w-8 h-8 text-brand-500"></i>
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold dark:text-white text-slate-800">Drag & Drop CSV File</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">or click to browse your computer</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex gap-4">
+                <i data-lucide="alert-triangle" class="text-amber-500 w-6 h-6 flex-shrink-0"></i>
+                <div class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    <strong class="text-amber-500 block mb-1">Schema Requirement:</strong>
+                    Ensure your CSV contains <span class="font-bold text-slate-800 dark:text-slate-200">Date, CustomerID, Quantity,</span> and <span class="font-bold text-slate-800 dark:text-slate-200">UnitPrice</span> columns. Column names are automatically mapped where possible.
+                </div>
+            </div>
+
+            <button id="uploadBtn" disabled class="w-full py-4 rounded-2xl bg-slate-500/10 text-slate-400 font-black uppercase tracking-widest transition-all disabled:cursor-not-allowed">
+                Analyze Custom Dataset
+            </button>
+        </div>
+
+        <!-- Tech Specs & FAQ -->
+        <div class="space-y-8 animate-in" style="animation-delay: 0.2s">
+            <div class="glass-card p-8 space-y-6">
+                <h4 class="text-xs font-black uppercase tracking-widest text-slate-500">Processing Engine</h4>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-slate-500/5 rounded-2xl">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="terminal" class="w-4 h-4 text-brand-500"></i>
+                            <span class="text-sm font-bold dark:text-white text-slate-800">Auto-Clustering</span>
+                        </div>
+                        <span class="text-[10px] bg-brand-500/10 text-brand-500 px-2 py-1 rounded-md font-black uppercase">K-Means++</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-500/5 rounded-2xl">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="activity" class="w-4 h-4 text-mint"></i>
+                            <span class="text-sm font-bold dark:text-white text-slate-800">Dynamic RFM</span>
+                        </div>
+                        <span class="text-[10px] bg-mint/10 text-mint px-2 py-1 rounded-md font-black uppercase">Real-Time</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-500/5 rounded-2xl">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-accent"></i>
+                            <span class="text-sm font-bold dark:text-white text-slate-800">Validation</span>
+                        </div>
+                        <span class="text-[10px] bg-accent/10 text-accent px-2 py-1 rounded-md font-black uppercase">Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 bg-slate-800/20 border-white/5">
+                <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Sample Template</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                    Don't have a dataset? Use our standard retail template to test the platform's multi-industry capabilities.
+                </p>
+                <a href="#" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-slate-500/20 text-xs font-bold dark:text-white text-slate-800 hover:bg-slate-500/5 transition-all">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Download Template (.csv)
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+
+    dropZone.onclick = () => fileInput.click();
+
+    fileInput.onchange = (e) => {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    };
+
+    function handleFileSelect(file) {
+        uploadBtn.disabled = false;
+        uploadBtn.classList.remove('bg-slate-500/10', 'text-slate-400');
+        uploadBtn.classList.add('bg-brand-500', 'text-white', 'shadow-xl', 'shadow-brand-500/20');
+        uploadBtn.innerHTML = `<i data-lucide="zap" class="w-4 h-4 inline-block mr-2"></i> Analyze ${file.name}`;
+        lucide.createIcons();
+    }
+
+    uploadBtn.onclick = () => {
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<span class="animate-pulse">Processing AI Pipeline...</span>';
+
+        fetch('/api/data/upload', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    window.showToast(d.success, 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    window.showToast(d.error, 'error');
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = 'Retry Analysis';
+                }
+            });
+    };
+
+    function resetData() {
+        fetch('/api/data/reset', { method: 'POST' })
+            .then(r => r.json())
+            .then(d => {
+                window.showToast(d.success, 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            });
+    }
+</script>
+{% endblock %}

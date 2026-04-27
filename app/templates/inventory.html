@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block title %}Inventory Optimization — RetailPulse{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-12 pb-12">
+
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row items-center gap-8 glass-card p-8 lg:p-12 relative overflow-hidden animate-in">
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-mint/10 rounded-full blur-3xl"></div>
+        
+        <div class="flex-1 text-center lg:text-left z-10">
+            <h1 class="text-4xl lg:text-6xl font-extrabold tracking-tight dark:text-white text-slate-800">
+                Inventory <span class="text-mint">Optimization</span>
+            </h1>
+            <p class="text-lg text-slate-500 dark:text-slate-400 mt-4 max-w-2xl">
+                Master your supply chain with intelligent ROP/EOQ strategies. Reduce carrying costs while maintaining elite service levels.
+            </p>
+        </div>
+        
+        <div class="w-48 h-48 lg:w-64 lg:h-64 relative z-10 flex items-center justify-center">
+            <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_vnikbeve.json" 
+                           background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay
+                           onerror="this.style.display='none'; document.getElementById('inv-fallback').classList.remove('hidden')"></lottie-player>
+            <div id="inv-fallback" class="hidden">
+                <i data-lucide="package" class="w-24 h-24 text-mint opacity-20"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="glass-card p-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="space-y-2">
+                <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Lead Time (Weeks)</label>
+                <div class="relative">
+                    <i data-lucide="calendar" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="number" id="leadTime" value="2" min="1" max="8" onchange="calculate()"
+                        class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-500/5 dark:text-white text-slate-700 outline-none focus:ring-2 focus:ring-brand-500/20 transition-all font-bold">
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Service Level (%)</label>
+                <div class="relative">
+                    <i data-lucide="shield" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="number" id="serviceLevel" value="95" min="80" max="99" onchange="calculate()"
+                        class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-500/5 dark:text-white text-slate-700 outline-none focus:ring-2 focus:ring-brand-500/20 transition-all font-bold">
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Ordering Cost (£)</label>
+                <div class="relative">
+                    <i data-lucide="banknote" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="number" id="orderingCost" value="500" min="100" max="2000" onchange="calculate()"
+                        class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-500/5 dark:text-white text-slate-700 outline-none focus:ring-2 focus:ring-brand-500/20 transition-all font-bold">
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Holding Cost (£/u)</label>
+                <div class="relative">
+                    <i data-lucide="box" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="number" id="holdingCost" value="0.5" min="0.1" max="2" step="0.1" onchange="calculate()"
+                        class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-500/5 dark:text-white text-slate-700 outline-none focus:ring-2 focus:ring-brand-500/20 transition-all font-bold">
+                </div>
+            </div>
+        </div>
+        <button onclick="calculate()"
+            class="group flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-4 rounded-2xl font-black text-white bg-brand-500 hover:bg-brand-600 transition-all shadow-lg shadow-brand-500/20 active:scale-95">
+            <i data-lucide="refresh-cw" class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500"></i>
+            RECALCULATE STRATEGY
+        </button>
+    </div>
+
+    <!-- Results Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="invMetrics">
+        <!-- JS Injection -->
+    </div>
+
+    <!-- Simulation Chart -->
+    <div class="glass-card p-8 hover-scale">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-3">
+                <i data-lucide="activity" class="text-mint"></i>
+                <h3 class="text-xl font-bold dark:text-white text-slate-800">12-Week Inventory Simulation</h3>
+            </div>
+        </div>
+        <div class="relative h-[350px] w-full">
+            <canvas id="simChart"></canvas>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const isDark = () => document.documentElement.classList.contains('dark');
+    const BRAND = '#6366f1';
+    const ACCENT = '#9966cc';
+    const MINT = '#10b981';
+    const CORAL = '#f43f5e';
+    let simChart;
+
+    function chartColors() {
+        const dark = isDark();
+        return {
+            grid: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+            text: dark ? '#64748b' : '#94a3b8',
+        };
+    }
+
+    function calculate() {
+        const p = new URLSearchParams({
+            lead_time: document.getElementById('leadTime').value,
+            service_level: document.getElementById('serviceLevel').value / 100,
+            ordering_cost: document.getElementById('orderingCost').value,
+            holding_cost: document.getElementById('holdingCost').value,
+        });
+
+        fetch('/api/inventory/calculate?' + p)
+            .then(r => r.json())
+            .then(d => {
+                const metrics = [
+                    { label: 'Safety Stock', value: d.safety_stock?.toLocaleString(), color: 'text-brand-500', bg: 'bg-brand-500/10', icon: 'shield' },
+                    { label: 'Reorder Point', value: d.reorder_point?.toLocaleString(), color: 'text-coral', bg: 'bg-coral/10', icon: 'bell-ring' },
+                    { label: 'EOQ Units', value: d.eoq?.toLocaleString(), color: 'text-accent', bg: 'bg-accent/10', icon: 'truck' },
+                    { label: 'Annual Cost', value: '£' + d.total_cost?.toLocaleString(), color: 'text-mint', bg: 'bg-mint/10', icon: 'wallet' },
+                ];
+
+                document.getElementById('invMetrics').innerHTML = metrics.map(m => `
+                    <div class="glass-card p-6 text-center hover-scale group cursor-pointer">
+                        <div class="w-12 h-12 ${m.bg} ${m.color} rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
+                            <i data-lucide="${m.icon}" class="w-6 h-6"></i>
+                        </div>
+                        <div class="text-2xl font-black dark:text-white text-slate-800">${m.value}</div>
+                        <div class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mt-1">${m.label}</div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+
+                const sp = new URLSearchParams({
+                    lead_time: document.getElementById('leadTime').value,
+                    reorder_point: d.reorder_point,
+                    safety_stock: d.safety_stock,
+                    eoq: d.eoq,
+                });
+
+                fetch('/api/inventory/simulate?' + sp)
+                    .then(r => r.json())
+                    .then(sim => {
+                        const colors = chartColors();
+                        const labels = Array.from({ length: sim.inventory.length }, (_, i) => `W${i+1}`);
+                        if (simChart) simChart.destroy();
+                        
+                        const ctx = document.getElementById('simChart').getContext('2d');
+                        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                        gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+                        gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+
+                        simChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels,
+                                datasets: [
+                                    {
+                                        label: 'Stock Level',
+                                        data: sim.inventory,
+                                        borderColor: MINT,
+                                        backgroundColor: gradient,
+                                        fill: true,
+                                        tension: 0.4,
+                                        pointRadius: 4,
+                                        pointBackgroundColor: MINT,
+                                        pointBorderColor: '#fff',
+                                        borderWidth: 3,
+                                    },
+                                    {
+                                        label: 'Reorder Point',
+                                        data: Array(sim.inventory.length).fill(sim.reorder_point),
+                                        borderColor: CORAL,
+                                        borderDash: [5, 5],
+                                        pointRadius: 0,
+                                        fill: false,
+                                        borderWidth: 2,
+                                    },
+                                    {
+                                        label: 'Safety Stock',
+                                        data: Array(sim.inventory.length).fill(sim.safety_stock),
+                                        borderColor: ACCENT,
+                                        borderDash: [2, 2],
+                                        pointRadius: 0,
+                                        fill: false,
+                                        borderWidth: 2,
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: { intersect: false, mode: 'index' },
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: { color: colors.text, usePointStyle: true, padding: 25, font: { family: 'Plus Jakarta Sans', size: 11 } }
+                                    },
+                                    tooltip: { cornerRadius: 12, padding: 12 }
+                                },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { color: colors.text, font: { family: 'Plus Jakarta Sans', size: 10 } } },
+                                    y: { grid: { color: colors.grid, drawBorder: false }, ticks: { color: colors.text, font: { family: 'Plus Jakarta Sans', size: 10 }, callback: v => v.toLocaleString() } }
+                                }
+                            }
+                        });
+                    });
+            });
+    }
+    calculate();
+    // ── Resize Fix ──
+    setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 500);
+</script>
+{% endblock %}

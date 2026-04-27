@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}Customer Segments — RetailPulse{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-12 pb-12">
+
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row items-center gap-8 glass-card p-8 lg:p-12 relative overflow-hidden animate-in">
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-accent/10 rounded-full blur-3xl"></div>
+        
+        <div class="flex-1 text-center lg:text-left z-10">
+            <h1 class="text-4xl lg:text-6xl font-extrabold tracking-tight dark:text-white text-slate-800">
+                Customer <span class="text-accent">Segmentation</span>
+            </h1>
+            <p class="text-lg text-slate-500 dark:text-slate-400 mt-4 max-w-2xl">
+                Identify high-value behaviors using K-Means RFM clustering. Tailor your marketing strategies to specific behavioral archetypes.
+            </p>
+        </div>
+        
+        <div class="w-48 h-48 lg:w-64 lg:h-64 relative z-10 flex items-center justify-center">
+            <lottie-player src="https://assets3.lottiefiles.com/packages/lf20_m6cu98v2.json" 
+                           background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay
+                           onerror="this.style.display='none'; document.getElementById('seg-fallback').classList.remove('hidden')"></lottie-player>
+            <div id="seg-fallback" class="hidden">
+                <i data-lucide="target" class="w-24 h-24 text-accent opacity-20"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Section -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-in" style="animation-delay: 0.1s" id="segMetrics">
+        <!-- JS Injection -->
+        {% for i in range(4) %}
+        <div class="glass-card p-6 flex flex-col items-center justify-center space-y-2 animate-pulse">
+            <div class="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+            <div class="h-6 w-20 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card p-8 hover-scale">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-xl font-bold dark:text-white text-slate-800">Segment Distribution</h3>
+                <i data-lucide="pie-chart" class="text-brand-500 w-6 h-6"></i>
+            </div>
+            <div class="relative h-[350px] w-full">
+                <canvas id="segmentPie"></canvas>
+            </div>
+        </div>
+        <div class="glass-card p-8 hover-scale">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-xl font-bold dark:text-white text-slate-800">Avg Monetary Value</h3>
+                <i data-lucide="bar-chart-3" class="text-accent w-6 h-6"></i>
+            </div>
+            <div class="relative h-[350px] w-full">
+                <canvas id="revenueBar"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Table -->
+    <div class="space-y-6">
+        <div class="flex items-center gap-3">
+            <i data-lucide="table-2" class="text-mint w-6 h-6"></i>
+            <h3 class="text-2xl font-bold dark:text-white text-slate-800">Performance Metrics</h3>
+        </div>
+        <div class="glass-card overflow-hidden" id="segmentTable">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+
+    <!-- Profiles -->
+    <div class="space-y-6">
+        <div class="flex items-center gap-3">
+            <i data-lucide="tag" class="text-coral w-6 h-6"></i>
+            <h3 class="text-2xl font-bold dark:text-white text-slate-800">Behavioral Profiles</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="segmentProfiles">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const PALETTE = ['#6366f1', '#9966cc', '#f43f5e', '#10b981', '#fbbf24', '#3b82f6', '#ec4899', '#94a3b8'];
+    const isDark = () => document.documentElement.classList.contains('dark');
+
+    function chartColors() {
+        const dark = isDark();
+        return {
+            grid: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+            text: dark ? '#64748b' : '#94a3b8',
+        };
+    }
+
+    // ── KPI Cards ──
+    fetch('/api/overview/kpi')
+        .then(r => r.json())
+        .then(d => {
+            const cards = [
+                { label: 'Total Customers', value: d.customers?.toLocaleString(), color: 'text-brand-500', bg: 'bg-brand-500/10', icon: 'users' },
+                { label: 'Revenue Base', value: d.revenue, color: 'text-mint', bg: 'bg-mint/10', icon: 'banknote' },
+                { label: 'Algorithm', value: 'K-Means', color: 'text-accent', bg: 'bg-accent/10', icon: 'cpu' },
+                { label: 'Features', value: 'RFM', color: 'text-coral', bg: 'bg-coral/10', icon: 'dna' },
+            ];
+            document.getElementById('segMetrics').innerHTML = cards.map(c => `
+                <div class="glass-card p-6 text-center hover-scale group cursor-pointer animate-in">
+                    <div class="w-12 h-12 ${c.bg} ${c.color} rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:rotate-12 transition-transform">
+                        <i data-lucide="${c.icon}" class="w-6 h-6"></i>
+                    </div>
+                    <div class="text-2xl font-black dark:text-white text-slate-800">${c.value}</div>
+                    <div class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mt-1">${c.label}</div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        });
+
+    // ── Doughnut Chart ──
+    fetch('/api/segments/distribution')
+        .then(r => r.json())
+        .then(d => {
+            const colors = chartColors();
+            new Chart(document.getElementById('segmentPie'), {
+                type: 'doughnut',
+                data: {
+                    labels: d.labels,
+                    datasets: [{
+                        data: d.values,
+                        backgroundColor: PALETTE,
+                        borderColor: isDark() ? '#0f172a' : '#ffffff',
+                        borderWidth: 4,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: colors.text, padding: 20, usePointStyle: true, font: { family: 'Plus Jakarta Sans', size: 11 } }
+                        }
+                    }
+                }
+            });
+        });
+
+    // ── Revenue Bar + Table ──
+    fetch('/api/segments/summary')
+        .then(r => r.json())
+        .then(rows => {
+            const colors = chartColors();
+            const labels = rows.map(r => r.Segment_Name || 'Unknown');
+            const revs = rows.map(r => r.Avg_Monetary || 0);
+
+            new Chart(document.getElementById('revenueBar'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: revs,
+                        backgroundColor: PALETTE,
+                        borderRadius: 12,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: colors.text, font: { size: 10 } } },
+                        y: { grid: { color: colors.grid, drawBorder: false }, ticks: { color: colors.text, callback: v => '£' + v } }
+                    }
+                }
+            });
+
+            // Build table
+            let html = `<div class="overflow-x-auto"><table class="w-full text-sm">
+                <thead>
+                    <tr class="dark:bg-slate-800/50 bg-slate-100 text-slate-500 dark:text-slate-400 text-left border-b border-slate-200 dark:border-slate-800">
+                        <th class="p-4 font-bold uppercase tracking-wider text-[10px]">Segment</th>
+                        <th class="p-4 font-bold uppercase tracking-wider text-[10px]">Size</th>
+                        <th class="p-4 font-bold uppercase tracking-wider text-[10px]">Recency</th>
+                        <th class="p-4 font-bold uppercase tracking-wider text-[10px]">Freq</th>
+                        <th class="p-4 font-bold uppercase tracking-wider text-[10px]">Avg Value</th>
+                        <th class="p-4 font-bold uppercase tracking-wider text-[10px]">Total Revenue</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-800">`;
+            rows.forEach((r, i) => {
+                html += `<tr class="hover:bg-slate-500/5 transition-colors dark:text-slate-300 text-slate-700">
+                    <td class="p-4 font-bold text-brand-500">${r.Segment_Name || ''}</td>
+                    <td class="p-4">${r.Customers || ''}</td>
+                    <td class="p-4 text-slate-400">${r.Avg_Recency?.toFixed(0) || ''}d</td>
+                    <td class="p-4 text-slate-400">${r.Avg_Frequency?.toFixed(1) || ''}</td>
+                    <td class="p-4 font-semibold text-mint">£${r.Avg_Monetary?.toLocaleString() || ''}</td>
+                    <td class="p-4 font-bold">£${r.Total_Revenue?.toLocaleString() || ''}</td>
+                </tr>`;
+            });
+            html += '</tbody></table></div>';
+            document.getElementById('segmentTable').innerHTML = html;
+        });
+
+    // ── Profiles ──
+    const SEGMENT_ICONS = {
+        'Champions': 'crown',
+        'Loyal Customers': 'heart',
+        'Potential Loyalist': 'star',
+        'Recent Customers': 'zap',
+        'Promising': 'trending-up',
+        'Customers Needing Attention': 'alert-circle',
+        'At Risk': 'user-minus',
+        'Cant Lose Them': 'shield',
+        'Hibernating': 'moon',
+        'Lost': 'trash-2'
+    };
+
+    fetch('/api/segments/profiles')
+        .then(r => r.json())
+        .then(profiles => {
+            document.getElementById('segmentProfiles').innerHTML = profiles.map((p, i) => {
+                const icon = SEGMENT_ICONS[p.name] || 'award';
+                const color = p.color || PALETTE[i % PALETTE.length];
+                
+                return `
+                <div class="glass-card p-8 flex flex-col gap-6 hover-scale border-l-4 transition-all relative overflow-hidden"
+                     style="border-left-color: ${color}">
+                    
+                    <!-- Abstract Background Pattern -->
+                    <div class="absolute top-0 right-0 p-4 opacity-[0.03]">
+                        <i data-lucide="${icon}" class="w-32 h-32"></i>
+                    </div>
+
+                    <div class="flex items-center justify-between relative z-10">
+                        <div class="p-3 rounded-2xl bg-slate-500/5 text-slate-800 dark:text-white" style="color: ${color}">
+                            <i data-lucide="${icon}" class="w-8 h-8"></i>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] uppercase tracking-widest font-black text-slate-400">Behavioral Archetype</span>
+                            <h4 class="text-xl font-black dark:text-white text-slate-800">${p.name}</h4>
+                        </div>
+                    </div>
+
+                    <p class="text-sm dark:text-slate-400 text-slate-500 leading-relaxed relative z-10">${p.desc}</p>
+                    
+                    <!-- Action Plan -->
+                    <div class="bg-slate-500/5 rounded-2xl p-4 border border-slate-500/10 relative z-10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="play" class="w-3 h-3" style="color: ${color}"></i>
+                            <span class="text-[10px] font-black uppercase tracking-widest" style="color: ${color}">Strategic Action</span>
+                        </div>
+                        <p class="text-xs font-bold dark:text-slate-300 text-slate-700 leading-tight">${p.action}</p>
+                    </div>
+
+                    <div class="mt-auto flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-400 pt-4 border-t border-slate-500/10">
+                        <span>Cluster Verified</span>
+                        <i data-lucide="check-circle-2" class="w-3 h-3 text-mint"></i>
+                    </div>
+                </div>
+            `;}).join('');
+            lucide.createIcons();
+        });
+    // ── Resize Fix ──
+    setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 500);
+</script>
+{% endblock %}
