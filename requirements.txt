@@ -19,3 +19,4 @@ optuna
 evidently>=0.7.21
 apache-airflow>=3.2.1
 flask
+gunicorn
