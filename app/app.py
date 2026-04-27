@@ -1,7 +1,9 @@
 # — RetailPulse Flask Application 
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent))
+APP_DIR = str(Path(__file__).parent)
+if APP_DIR not in sys.path:
+    sys.path.insert(0, APP_DIR)
 
 from flask import Flask, request, redirect
 from blueprints.dashboard import dashboard_bp
