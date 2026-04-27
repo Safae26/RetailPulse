@@ -7,3 +7,5 @@ models/
 venv/
 checkpoints/
 reports/
+app/data/uploads/*
+!app/data/uploads/.gitkeep
