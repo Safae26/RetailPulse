@@ -1,0 +1,11 @@
+CustomerID,Recency,Frequency,Monetary,Cluster,Segment_Name
+CUS-101,5,1,30.0,6,Needs Attention
+CUS-102,5,1,120.0,4,Promising
+CUS-103,4,1,24.950000000000003,0,Champions
+CUS-104,4,1,25.0,0,Champions
+CUS-105,3,1,45.0,5,At Risk
+CUS-106,3,1,46.5,5,At Risk
+CUS-107,2,1,299.0,1,Loyal Customers
+CUS-108,1,1,24.0,3,Recent Customers
+CUS-109,1,1,29.0,7,Hibernating
+CUS-110,0,1,85.0,2,Potential Loyalist

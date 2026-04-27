@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}Churn Prediction — RetailPulse{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-12 pb-12">
+
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row items-center gap-8 glass-card p-8 lg:p-12 relative overflow-hidden animate-in">
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-coral/10 rounded-full blur-3xl"></div>
+        
+        <div class="flex-1 text-center lg:text-left z-10">
+            <h1 class="text-4xl lg:text-6xl font-extrabold tracking-tight dark:text-white text-slate-800">
+                Churn <span class="text-coral">Prediction</span>
+            </h1>
+            <p class="text-lg text-slate-500 dark:text-slate-400 mt-4 max-w-2xl">
+                Identify high-risk customers before they leave. Our XGBoost + SHAP ensemble explains the 'why' behind behavioral attrition.
+            </p>
+        </div>
+        
+        <div class="w-48 h-48 lg:w-64 lg:h-64 relative z-10 flex items-center justify-center">
+            <lottie-player src="https://assets7.lottiefiles.com/packages/lf20_96bovdur.json" 
+                           background="transparent" speed="0.8" style="width: 100%; height: 100%;" loop autoplay
+                           onerror="this.style.display='none'; document.getElementById('lottie-fallback').classList.remove('hidden')"></lottie-player>
+            <div id="lottie-fallback" class="hidden">
+                <i data-lucide="alert-circle" class="w-24 h-24 text-coral opacity-20"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Section -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6" id="churnMetrics">
+        <!-- JS Injection -->
+        {% for i in range(3) %}
+        <div class="glass-card p-6 flex flex-col items-center justify-center space-y-2 animate-pulse">
+            <div class="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+            <div class="h-6 w-20 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card p-8 hover-scale">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-xl font-bold dark:text-white text-slate-800">Churn Drivers (SHAP)</h3>
+                <i data-lucide="activity" class="text-coral w-6 h-6"></i>
+            </div>
+            <div class="relative h-[350px] w-full">
+                <canvas id="shapChart"></canvas>
+            </div>
+        </div>
+        <div class="glass-card p-8 hover-scale">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-xl font-bold dark:text-white text-slate-800">Risk by Segment</h3>
+                <i data-lucide="bar-chart-2" class="text-brand-500 w-6 h-6"></i>
+            </div>
+            <div class="relative h-[350px] w-full">
+                <canvas id="riskBySegment"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Retention Playbook -->
+    <div class="space-y-6">
+        <div class="flex items-center gap-3">
+            <i data-lucide="shield-check" class="text-mint w-6 h-6"></i>
+            <h3 class="text-2xl font-bold dark:text-white text-slate-800">Retention Playbook</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="playbook">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const isDark = () => document.documentElement.classList.contains('dark');
+    const CORAL = '#f43f5e';
+    const BRAND = '#6366f1';
+    const MINT = '#10b981';
+
+    function chartColors() {
+        const dark = isDark();
+        return {
+            grid: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+            text: dark ? '#64748b' : '#94a3b8',
+        };
+    }
+
+    // ── KPI Cards ──
+    fetch('/api/churn/summary')
+        .then(r => r.json())
+        .then(d => {
+            const cards = [
+                { label: 'AUC-ROC', value: d.auc_roc, color: 'text-brand-500', bg: 'bg-brand-500/10', icon: 'check-circle' },
+                { label: 'Churn Rate', value: d.churn_rate, color: 'text-coral', bg: 'bg-coral/10', icon: 'user-minus' },
+                { label: 'Model', value: d.model, color: 'text-accent', bg: 'bg-accent/10', icon: 'cpu' },
+            ];
+            document.getElementById('churnMetrics').innerHTML = cards.map(c => `
+                <div class="glass-card p-6 text-center hover-scale group cursor-pointer">
+                    <div class="w-12 h-12 ${c.bg} ${c.color} rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
+                        <i data-lucide="${c.icon}" class="w-6 h-6"></i>
+                    </div>
+                    <div class="text-2xl font-black dark:text-white text-slate-800">${c.value}</div>
+                    <div class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mt-1">${c.label}</div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        });
+
+    // ── SHAP Feature Importance ──
+    fetch('/api/churn/feature-importance')
+        .then(r => r.json())
+        .then(data => {
+            const colors = chartColors();
+            new Chart(document.getElementById('shapChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.feature),
+                    datasets: [{
+                        data: data.map(d => d.importance),
+                        backgroundColor: [CORAL, '#fbbf24', '#3b82f6', BRAND],
+                        borderRadius: 12,
+                        maxBarThickness: 30
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            max: 0.5,
+                            grid: { color: colors.grid, drawBorder: false },
+                            ticks: { color: colors.text, callback: v => (v * 100) + '%', font: { family: 'Plus Jakarta Sans', size: 10 } }
+                        },
+                        y: { grid: { display: false }, ticks: { color: colors.text, font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } } }
+                    }
+                }
+            });
+        });
+
+    // ── Risk by Segment ──
+    fetch('/api/churn/risk-distribution')
+        .then(r => r.json())
+        .then(data => {
+            const colors = chartColors();
+            new Chart(document.getElementById('riskBySegment'), {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.segment),
+                    datasets: [{
+                        label: 'High Risk %',
+                        data: data.map(d => d.high_risk_pct),
+                        backgroundColor: CORAL,
+                        borderRadius: 12,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            max: 100,
+                            grid: { color: colors.grid, drawBorder: false },
+                            ticks: { color: colors.text, callback: v => v + '%', font: { family: 'Plus Jakarta Sans', size: 10 } }
+                        },
+                        x: { grid: { display: false }, ticks: { color: colors.text, font: { family: 'Plus Jakarta Sans', size: 10 } } }
+                    }
+                }
+            });
+        });
+
+    // ── Playbook ──
+    fetch('/api/churn/retention-playbook')
+        .then(r => r.json())
+        .then(p => {
+            const cards = [
+                { level: 'high', icon: 'zap', title: 'High Risk', items: p.high_risk, color: CORAL, bg: 'bg-coral/5', border: 'border-coral/20' },
+                { level: 'medium', icon: 'activity', title: 'Medium Risk', items: p.medium_risk, color: '#fbbf24', bg: 'bg-yellow-500/5', border: 'border-yellow-500/20' },
+                { level: 'low', icon: 'check-circle', title: 'Low Risk', items: p.low_risk, color: MINT, bg: 'bg-mint/5', border: 'border-mint/20' },
+            ];
+            document.getElementById('playbook').innerHTML = cards.map(c => `
+                <div class="glass-card p-8 border-t-4 hover-scale flex flex-col gap-6" style="border-top-color: ${c.color}">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 rounded-2xl ${c.bg}">
+                            <i data-lucide="${c.icon}" style="color: ${c.color}" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="text-xl font-black dark:text-white text-slate-800">${c.title}</h4>
+                    </div>
+                    <ul class="space-y-4">
+                        ${c.items.map(i => `
+                            <li class="flex items-start gap-3">
+                                <div class="mt-1.5 w-1.5 h-1.5 rounded-full" style="background-color: ${c.color}"></div>
+                                <span class="text-sm dark:text-slate-400 text-slate-600 leading-relaxed">${i}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        });
+    // ── Resize Fix ──
+    setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 500);
+</script>
+{% endblock %}

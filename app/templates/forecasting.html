@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block title %}Demand Forecasting — RetailPulse{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-12 pb-12">
+
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row items-center gap-8 glass-card p-8 lg:p-12 relative overflow-hidden animate-in">
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl"></div>
+        
+        <div class="flex-1 text-center lg:text-left z-10">
+            <h1 class="text-4xl lg:text-6xl font-extrabold tracking-tight dark:text-white text-slate-800">
+                Demand <span class="text-brand-500">Forecasting</span>
+            </h1>
+            <p class="text-lg text-slate-500 dark:text-slate-400 mt-4 max-w-2xl">
+                Anticipate market shifts with high-fidelity simulations. Our Prophet & LSTM ensemble provides deep-learning powered revenue predictions.
+            </p>
+        </div>
+        
+        <div class="w-48 h-48 lg:w-64 lg:h-64 relative z-10 flex items-center justify-center">
+            <lottie-player src="https://assets2.lottiefiles.com/private_files/lf30_8np772.json" 
+                           background="transparent" speed="1" style="width: 100%; height: 100%;" loop autoplay
+                           onerror="this.style.display='none'; document.getElementById('forecast-fallback').classList.remove('hidden')"></lottie-player>
+            <div id="forecast-fallback" class="hidden">
+                <i data-lucide="trending-up" class="w-24 h-24 text-brand-500 opacity-20"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Section -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-in" style="animation-delay: 0.1s" id="forecastStats">
+        <!-- JS Injection -->
+        {% for i in range(4) %}
+        <div class="glass-card p-6 flex flex-col items-center justify-center space-y-2 animate-pulse">
+            <div class="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+            <div class="h-6 w-20 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Main Chart -->
+    <div class="glass-card p-8 hover-scale">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-3">
+                <i data-lucide="bar-chart" class="text-brand-500"></i>
+                <h3 class="text-xl font-bold dark:text-white text-slate-800">Weekly Revenue History</h3>
+            </div>
+        </div>
+        <div class="relative h-[300px] w-full">
+            <canvas id="weeklyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Scenario Planner -->
+    <div class="glass-card p-8 hover-scale">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
+            <div class="flex items-center gap-3">
+                <i data-lucide="gamepad-2" class="text-accent"></i>
+                <h3 class="text-xl font-bold dark:text-white text-slate-800">What-If Scenario Planner</h3>
+            </div>
+            <div class="flex flex-wrap items-center gap-6">
+                <!-- Target Date Horizon -->
+                <div data-role="all" class="flex items-center gap-4 bg-slate-500/5 p-2 px-4 rounded-2xl">
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Target Date</span>
+                    <input type="date" id="targetDate" onchange="updateWeeksFromDate()"
+                        class="bg-transparent text-xs font-black text-accent outline-none cursor-pointer">
+                </div>
+                <!-- Weeks Input (Synced with Date) -->
+                <div data-role="all" class="flex items-center gap-4 bg-slate-500/5 p-2 px-4 rounded-2xl">
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Horizon (Weeks)</span>
+                    <input type="number" id="forecastWeeks" value="12" min="4" max="52" onchange="runWhatIf()"
+                        class="w-16 bg-transparent text-center font-black text-brand-500 outline-none">
+                </div>
+                <!-- Growth Scenario -->
+                <div data-role="exec" class="flex items-center gap-4 bg-slate-500/5 p-2 px-4 rounded-2xl">
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Growth Scenario</span>
+                    <input type="range" id="growthRate" min="-20" max="50" value="10" oninput="runWhatIf()"
+                        class="w-32 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-brand-500">
+                    <span id="growthVal" class="min-w-[40px] text-right font-black text-brand-500">10%</span>
+                </div>
+            </div>
+        </div>
+        <div class="relative h-[300px] w-full">
+            <canvas id="whatIfChart"></canvas>
+        </div>
+        <div class="mt-8 p-4 rounded-2xl bg-mint/5 border border-mint/10 text-center">
+            <span class="text-xs font-bold uppercase tracking-[0.2em] text-mint/60 block mb-1">Projected Total Revenue</span>
+            <span class="text-2xl font-black text-mint" id="total12w">—</span>
+        </div>
+    </div>
+
+    <!-- Model Metrics -->
+    <div class="space-y-6">
+        <div class="flex items-center gap-3">
+            <i data-lucide="settings" class="text-slate-400"></i>
+            <h3 class="text-2xl font-bold dark:text-white text-slate-800">Model Performance</h3>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6" id="modelMetrics">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const isDark = () => document.documentElement.classList.contains('dark');
+    const BRAND = '#6366f1';
+    const ACCENT = '#9966cc';
+    const MINT = '#10b981';
+    const CORAL = '#f43f5e';
+
+    function chartColors() {
+        const dark = isDark();
+        return {
+            grid: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+            text: dark ? '#64748b' : '#94a3b8',
+        };
+    }
+
+    // ── KPI Cards ──
+    fetch('/api/forecast/stats')
+        .then(r => r.json())
+        .then(s => {
+            const cards = [
+                { label: 'Total Revenue', value: s.total_revenue, color: 'text-brand-500', bg: 'bg-brand-500/10', icon: 'banknote' },
+                { label: 'Avg Weekly', value: s.avg_weekly, color: 'text-mint', bg: 'bg-mint/10', icon: 'calendar' },
+                { label: 'Peak Week', value: s.peak_week, color: 'text-accent', bg: 'bg-accent/10', icon: 'zap' },
+                { label: 'Weeks of Data', value: s.num_weeks, color: 'text-coral', bg: 'bg-coral/10', icon: 'database' },
+            ];
+            document.getElementById('forecastStats').innerHTML = cards.map(c => `
+                <div class="glass-card p-6 text-center hover-scale group cursor-pointer">
+                    <div class="w-12 h-12 ${c.bg} ${c.color} rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
+                        <i data-lucide="${c.icon}" class="w-6 h-6"></i>
+                    </div>
+                    <div class="text-2xl font-black dark:text-white text-slate-800">${c.value}</div>
+                    <div class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mt-1">${c.label}</div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        });
+
+    // ── Weekly Revenue ──
+    let weeklyChart;
+    fetch('/api/forecast/historical')
+        .then(r => r.json())
+        .then(d => {
+            const colors = chartColors();
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
+            gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+
+            weeklyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: d.dates,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: d.values,
+                        borderColor: BRAND,
+                        backgroundColor: gradient,
+                        fill: true, tension: 0.5, pointRadius: 0, borderWidth: 3,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: colors.text, maxTicksLimit: 12, font: { family: 'Plus Jakarta Sans', size: 10 } } },
+                        y: { grid: { color: colors.grid, drawBorder: false }, ticks: { color: colors.text, callback: v => '£' + v.toLocaleString(), font: { family: 'Plus Jakarta Sans', size: 10 } } }
+                    }
+                }
+            });
+        });
+
+    // ── What-If System ──
+    let whatIfChart;
+    let historicalData = null;
+
+    async function initWhatIf() {
+        try {
+            const res = await fetch('/api/forecast/historical');
+            historicalData = await res.json();
+            
+            // Set default date
+            const targetInput = document.getElementById('targetDate');
+            if (targetInput && !targetInput.value) {
+                const d = new Date();
+                d.setDate(d.getDate() + 84); // 12 weeks
+                targetInput.value = d.toISOString().split('T')[0];
+            }
+            
+            runWhatIf();
+        } catch (e) { console.error("Init Error", e); }
+    }
+
+    async function runWhatIf() {
+        if (!historicalData) return;
+        
+        const growth = document.getElementById('growthRate').value || 0;
+        const weeks = document.getElementById('forecastWeeks').value || 12;
+        document.getElementById('growthVal').textContent = growth + '%';
+
+        try {
+            const res = await fetch(`/api/forecast/what-if?growth=${growth}&weeks=${weeks}`);
+            const d = await res.json();
+            
+            if (!d || !d.dates) return;
+            document.getElementById('total12w').textContent = `£${d.total_12w?.toLocaleString()}`;
+
+            const hd = historicalData.dates.slice(-12);
+            const hv = historicalData.values.slice(-12);
+            
+            if (whatIfChart) whatIfChart.destroy();
+            
+            // Ensure canvas is ready
+            const canvas = document.getElementById('whatIfChart');
+            const ctx = canvas.getContext('2d');
+            
+            whatIfChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [...hd, ...d.dates],
+                    datasets: [
+                        {
+                            label: 'History',
+                            data: [...hv, ...Array(d.dates.length).fill(null)],
+                            borderColor: '#6366f1',
+                            borderWidth: 4,
+                            pointRadius: 0,
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Forecast',
+                            data: [...Array(hv.length).fill(null), ...d.values],
+                            borderColor: '#9966cc',
+                            borderWidth: 4,
+                            borderDash: [8, 4],
+                            pointRadius: 0,
+                            tension: 0.4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }
+                    },
+                    plugins: { legend: { display: true, position: 'bottom' } }
+                }
+            });
+        } catch (e) { console.error("Run Error", e); }
+    }
+
+    document.addEventListener('DOMContentLoaded', initWhatIf);
+    // Also call immediately if script loads late
+    if (document.readyState === 'complete' || document.readyState === 'interactive') initWhatIf();
+
+    // ── Model Metrics ──
+    fetch('/api/forecast/metrics')
+        .then(r => r.json())
+        .then(m => {
+            const cards = [
+                { icon: 'target', label: 'Prophet', value: m.prophet_mape + '%', color: 'text-brand-500', bg: 'bg-brand-500/10' },
+                { icon: 'brain', label: 'LSTM', value: m.lstm_mape + '%', color: 'text-accent', bg: 'bg-accent/10' },
+                { icon: 'award', label: 'Ensemble', value: '🏆 Best', color: 'text-mint', bg: 'bg-mint/10' },
+            ];
+            document.getElementById('modelMetrics').innerHTML = cards.map(c => `
+                <div class="glass-card p-6 text-center hover-scale group">
+                    <div class="w-12 h-12 ${c.bg} ${c.color} rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:rotate-12 transition-transform">
+                        <i data-lucide="${c.icon}" class="w-6 h-6"></i>
+                    </div>
+                    <div class="text-3xl font-black dark:text-white text-slate-800">${c.value}</div>
+                    <div class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mt-1">${c.label} MAPE</div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        });
+    // ── Resize Fix ──
+    setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 500);
+</script>
+{% endblock %}
