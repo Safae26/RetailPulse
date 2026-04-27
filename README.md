@@ -104,6 +104,23 @@ Fragmented data and legacy forecasting methods lead to costly **overstocking** o
 
 ---
 
+## 🚀 Live Deployment
+
+RetailPulse is deployed and accessible online via **Render** — no local setup needed to view the dashboard.
+
+| Detail | Value |
+|:---|:---|
+| **Platform** | [Render](https://render.com) |
+| **Live URL** | [retailpulse-sd7y.onrender.com](https://retailpulse-sd7y.onrender.com) |
+| **Auto-Deploy** | ✅ Enabled — every push to `main` triggers a live update |
+| **SSL/HTTPS** | ✅ Enforced automatically |
+| **Stack** | Flask + Gunicorn |
+
+> [!NOTE]
+> The free Render instance spins down after 15 minutes of inactivity. The first visit may take 30–50 seconds to wake up. Upgrade to a paid plan for instant response.
+
+---
+
 ## 💭 Reflection & Roadmap
 
 **Key Learnings**: Transitioning from static models to a dynamic MLOps pipeline using MLflow was the most impactful shift.
