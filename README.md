@@ -34,7 +34,7 @@ Retail clients need data-driven decisions to reduce waste and maximize profit. R
 
 ## 🧠 Core MLOps Pipeline & Architecture
 
-*(Insert Screenshot / Excalidraw Diagram Here)*
+*Screenshot / Excalidraw Diagram Soon*
 
 1.  **Data Ingestion & Cleaning**: Ingest sales, customer, and inventory data from multiple sources (Automated ETL pipeline, data quality checks).
 2.  **Customer Segmentation**: RFM + behavioral segmentation using K-Means / DBSCAN. 8 meaningful segments with business interpretation.
