@@ -5,11 +5,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import os
 from flask import render_template, jsonify, request, current_app, session
 from . import dashboard_bp
-from models.rfm_analysis import RFMAnalysis
-from models.demand_forecasting import DemandForecasting
-from models.churn_prediction import ChurnPrediction
-from models.inventory_optimization import InventoryOptimization
-from utils.data_processor import DataProcessor
+from app.models.rfm_analysis import RFMAnalysis
+from app.models.demand_forecasting import DemandForecasting
+from app.models.churn_prediction import ChurnPrediction
+from app.models.inventory_optimization import InventoryOptimization
+from app.utils.data_processor import DataProcessor
 
 # Global Model Instances
 rfm_model = RFMAnalysis()
