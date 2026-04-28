@@ -107,13 +107,13 @@ RetailPulse is configured for scalable cloud deployment via **AWS / GCP**.
 *(Note: This application is not hosted on Render for production).*
 
 ### 🔗 Public Demo URL
-[Insert AWS/GCP HTTPS Link Here]
+Soon
 
 ### 📺 Demo Video
-[Insert YouTube Unlisted / Loom Link Here]
+Soon
 
 ### 🖼️ Platform Showcase
-*(Insert 15 high-quality screenshots / GIFs of EDA plots, dashboards, and model outputs here)*
+Soon
 
 ---
 
