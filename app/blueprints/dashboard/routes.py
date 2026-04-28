@@ -1,7 +1,3 @@
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
 import os
 from flask import render_template, jsonify, request, current_app, session
 from . import dashboard_bp
