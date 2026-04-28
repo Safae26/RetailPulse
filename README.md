@@ -84,7 +84,7 @@
 | Category | Technology | Rationale |
 |:---|:---|:---|
 | **Language** | ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white) | Core Logic |
-| **Data Processing** | ![Pandas](https://img.shields.io/badge/Pandas-2.0-150458?logo=pandas&logoColor=white) ![Sklearn](https://img.shields.io/badge/Scikit--Learn-F7931E?logo=scikit-learn&logoColor=white) | Data Pipeline |
+| **Data Processing** | ![Pandas](https://img.shields.io/badge/Pandas-2.0-150458?logo=pandas&logoColor=white) ![NumPy](https://img.shields.io/badge/NumPy-1.24-013243?logo=numpy&logoColor=white) ![Sklearn](https://img.shields.io/badge/Scikit--Learn-F7931E?logo=scikit-learn&logoColor=white) | Data Pipeline |
 | **Forecasting** | ![Prophet](https://img.shields.io/badge/Facebook--Prophet-008080?logo=facebook&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white) | Hybrid AI (Prophet + LSTM) |
 | **MLOps** | ![MLflow](https://img.shields.io/badge/MLflow-0194E2?logo=mlflow&logoColor=white) ![Evidently](https://img.shields.io/badge/Evidently--AI-6D4AFF) | Experiment tracking & Drift detection |
 | **App / Dashboard** | ![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white) | Frontend & Visualizations |
