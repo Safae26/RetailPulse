@@ -3,7 +3,7 @@ data/processed/
 __pycache__/
 *.pyc
 mlruns/
-models/
+/models/
 venv/
 checkpoints/
 reports/
