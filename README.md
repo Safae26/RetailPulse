@@ -33,7 +33,7 @@
 > *   🟡 **Inventory Optimization** (ROP/EOQ)
 
 ### 🎯 Strategic Goals & Business Impact
-*   **Reduce Stockouts by 30–50%** via AI-driven accurate demand forecasting.
+*   **Reduce Stockouts by 30–50%** via AI-driven accurate demand forecasting. 
 *   **Increase Revenue by 15–25%** through better inventory decisions.
 *   **Improve Customer Retention** by identifying at-risk customers early.
 *   **Process 10M+ Transactions** per month with daily batch jobs under 5 minutes.
