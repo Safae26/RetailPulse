@@ -112,7 +112,7 @@ RetailPulse is deployed and accessible online via **Render** — no local setup 
 | Detail | Value |
 |:---|:---|
 | **Platform** | [Render](https://render.com) |
-| **Live URL** | [retailpulse-sd7y.onrender.com](https://retailpulse-mnj7.onrender.com) |
+| **Live URL** | [retailpulse-mnj7.onrender.com](https://retailpulse-mnj7.onrender.com) |
 | **Auto-Deploy** | ✅ Enabled — every push to `main` triggers a live update |
 | **SSL/HTTPS** | ✅ Enforced automatically |
 | **Stack** | Flask + Gunicorn |
