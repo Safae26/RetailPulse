@@ -1,4 +1,3 @@
-# 📊 RetailPulse – AI-Powered Customer Analytics & Demand Forecasting Platform
 
 > **End-to-End Data Science & Analytics Solution for Retail Demand Prediction & Customer Insights**
 

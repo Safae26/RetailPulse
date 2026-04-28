@@ -6,7 +6,7 @@
 
     <!-- Header Section -->
     <div
-        class="flex flex-col lg:flex-row items-center gap-8 glass-card p-8 lg:p-12 relative overflow-hidden animate-in">
+        class="flex flex-col lg:flex-row items-center gap-8 glass-card p-6 lg:p-12 relative overflow-hidden animate-in">
         <!-- Digital Grid Overlay -->
         <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.07] pointer-events-none"
             style="background-image: radial-gradient(#6366f1 0.5px, transparent 0.5px); background-size: 24px 24px;">
@@ -15,13 +15,13 @@
         <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl"></div>
         <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-accent/10 rounded-full blur-3xl"></div>
 
-        <!-- Neural Network Background Lottie -->
-        <div class="absolute inset-y-0 right-0 left-1/2 z-0 opacity-40 pointer-events-none">
+        <!-- Neural Network Lottie -->
+        <div class="w-full lg:w-1/2 h-64 lg:h-96 z-10 order-1 lg:order-2 flex items-center justify-center pointer-events-none">
             <lottie-player src="https://assets3.lottiefiles.com/packages/lf20_w51pcehl.json" background="transparent"
-                speed="0.5" style="width: 100%; height: 100%; object-fit: cover;" loop autoplay></lottie-player>
+                speed="0.5" class="w-full h-full object-contain" loop autoplay></lottie-player>
         </div>
 
-        <div class="flex-1 space-y-4 text-center lg:text-left z-10">
+        <div class="flex-1 space-y-4 text-center lg:text-left z-10 order-2 lg:order-1">
             <h1 class="text-4xl lg:text-6xl font-extrabold tracking-tight">
                 <span
                     class="bg-gradient-to-r from-brand-500 via-accent to-coral bg-clip-text text-transparent">RetailPulse</span><br>
@@ -55,7 +55,7 @@
 
     <!-- Intelligence Guide -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in" style="animation-delay: 0.1s">
-        <div class="lg:col-span-1 glass-card p-8 bg-brand-500/5 border-brand-500/20">
+        <div class="lg:col-span-1 glass-card p-6 lg:p-8 bg-brand-500/5 border-brand-500/20">
             <div class="flex items-center gap-3 mb-6">
                 <div class="p-2 bg-brand-500 rounded-lg shadow-lg shadow-brand-500/20">
                     <i data-lucide="target" class="text-white w-5 h-5"></i>
@@ -95,11 +95,16 @@
             </div>
         </div>
 
-        <div class="lg:col-span-2 glass-card p-8 flex items-center justify-between overflow-hidden relative">
-            <div class="absolute top-0 right-0 p-4 opacity-10">
+        <div class="lg:col-span-2 glass-card shimmer-effect p-6 lg:p-8 flex flex-col md:flex-row items-center justify-between overflow-hidden relative gap-6">
+            <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                 <i data-lucide="sparkles" class="w-32 h-32"></i>
             </div>
-            <div class="relative z-10 max-w-md">
+            <div class="w-32 h-32 md:w-48 md:h-48 order-1 md:order-2 shrink-0 relative z-10">
+                <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_m6cu98v2.json"
+                    background="transparent" speed="0.8" style="width: 100%; height: 100%;" loop
+                    autoplay></lottie-player>
+            </div>
+            <div class="relative z-10 max-w-md text-center md:text-left order-2 md:order-1">
                 <h4
                     class="text-2xl font-black mb-4 bg-gradient-to-r from-brand-500 to-accent bg-clip-text text-transparent">
                     Pro Tip</h4>
@@ -107,7 +112,7 @@
                     The <strong>Inventory Simulation</strong> uses Monte Carlo methods to predict stockouts.
                     Try adjusting your Lead Time to see how it affects your Safety Stock in real-time.
                 </p>
-                <div class="mt-6 flex gap-4">
+                <div class="mt-6 flex flex-wrap justify-center md:justify-start gap-4">
                     <a href="/forecasting"
                         class="text-xs font-bold text-brand-500 hover:underline flex items-center gap-1">
                         Try Forecast <i data-lucide="arrow-right" class="w-3 h-3"></i>
@@ -116,11 +121,6 @@
                         Try Inventory <i data-lucide="arrow-right" class="w-3 h-3"></i>
                     </a>
                 </div>
-            </div>
-            <div class="hidden md:block w-48 h-48">
-                <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_m6cu98v2.json"
-                    background="transparent" speed="0.8" style="width: 100%; height: 100%;" loop
-                    autoplay></lottie-player>
             </div>
         </div>
     </div>
@@ -145,7 +145,7 @@
                 <i data-lucide="activity" class="text-brand-500 animate-pulse"></i> Live Model Intelligence
             </h3>
             <div
-                class="px-3 py-1 bg-mint/10 text-mint text-[10px] font-bold rounded-full animate-pulse uppercase tracking-widest border border-mint/20">
+                class="px-3 py-1 bg-mint/10 text-mint text-[10px] font-bold rounded-full pulse-glow uppercase tracking-widest border border-mint/20">
                 All Systems Nominal
             </div>
         </div>
@@ -159,7 +159,7 @@
 
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in" style="animation-delay: 0.3s">
-        <div class="lg:col-span-2 glass-card p-8 hover-scale">
+        <div class="lg:col-span-2 glass-card p-6 lg:p-8 hover-scale">
             <div class="flex items-center justify-between mb-8">
                 <div>
                     <h3 class="text-xl font-bold dark:text-white text-slate-800">Weekly Revenue</h3>
@@ -174,7 +174,7 @@
             </div>
         </div>
 
-        <div class="glass-card p-8 hover-scale">
+        <div class="glass-card p-6 lg:p-8 hover-scale">
             <div class="flex items-center justify-between mb-8">
                 <div>
                     <h3 class="text-xl font-bold dark:text-white text-slate-800">Segmentation</h3>
@@ -195,7 +195,7 @@
     </div>
 
     <!-- ML Pipeline Lifecycle -->
-    <div class="glass-card p-8 lg:p-12 animate-in relative overflow-hidden" style="animation-delay: 0.4s">
+    <div class="glass-card p-6 lg:p-12 animate-in relative overflow-hidden" style="animation-delay: 0.4s">
         <!-- Background Data Flow -->
         <div class="absolute inset-0 opacity-[0.02] pointer-events-none">
             <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_96bovdur.json" background="transparent"

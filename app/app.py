@@ -1,10 +1,6 @@
 # — RetailPulse Flask Application 
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent))
-
 from flask import Flask, request, redirect
-from blueprints.dashboard import dashboard_bp
+from app.blueprints.dashboard import dashboard_bp
 
 app = Flask(__name__)
 app.secret_key = 'retailpulse-2026-vibe'
