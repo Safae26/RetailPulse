@@ -1,9 +1,9 @@
 data/raw/
-data/processed/
+data/processed/online_retail*.csv
 __pycache__/
 *.pyc
 mlruns/
-models/
+/models/
 venv/
 checkpoints/
 reports/

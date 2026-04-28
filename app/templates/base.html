@@ -9,12 +9,15 @@
     <title>{% block title %}RetailPulse 2026{% endblock %}</title>
 
     <!-- Favicon (Inlined SVG for immediate result) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><path d='M20 50 L40 50 L50 20 L60 80 L70 50 L80 50' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><path d='M20 50 L40 50 L50 20 L60 80 L70 50 L80 50' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Tailwind 4.0 CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -43,6 +46,26 @@
         }
     </script>
 
+    <style>
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .btn-shimmer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 2.5s infinite;
+        }
+    </style>
     <!-- External CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
@@ -50,7 +73,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-    
+
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -63,19 +86,28 @@
 <body class="font-sans min-h-screen transition-colors duration-500 antialiased overflow-x-hidden">
 
     <!-- Premium Loader -->
-    <div id="page-loader" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 1500)" :class="{ 'fade-out': !loading }">
-        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_96bovdur.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay>
-             <img src="fallback-mascot.png" alt="RetailPulse Mascot" class="w-full h-full object-contain">
+    <div id="page-loader" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 1500)"
+        :class="{ 'fade-out': !loading }">
+        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_96bovdur.json" background="transparent"
+            speed="1" style="width: 200px; height: 200px;" loop autoplay>
+            <img src="fallback-mascot.png" alt="RetailPulse Mascot" class="w-full h-full object-contain">
         </lottie-player>
-        <p class="mt-4 font-bold text-brand-500 animate-pulse tracking-widest uppercase text-xs">Initializing RetailPulse...</p>
+        <p class="mt-4 font-bold text-brand-500 animate-pulse tracking-widest uppercase text-xs">Initializing
+            RetailPulse...</p>
     </div>
 
     <!-- Floating Background Elements -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div class="floating-bg w-[500px] h-[500px] bg-brand-500/10 top-[-250px] left-[-250px] rounded-full blur-[120px] animate-float"></div>
-        <div class="floating-bg w-[400px] h-[400px] bg-accent/10 bottom-[-200px] right-[-200px] rounded-full blur-[100px] animate-float-delayed"></div>
-        <div class="animate-scan w-full h-[2px] bg-gradient-to-r from-transparent via-brand-500/20 to-transparent absolute top-0"></div>
-        
+        <div
+            class="floating-bg w-[500px] h-[500px] bg-brand-500/10 top-[-250px] left-[-250px] rounded-full blur-[120px] animate-float">
+        </div>
+        <div
+            class="floating-bg w-[400px] h-[400px] bg-accent/10 bottom-[-200px] right-[-200px] rounded-full blur-[100px] animate-float-delayed">
+        </div>
+        <div
+            class="animate-scan w-full h-[2px] bg-gradient-to-r from-transparent via-brand-500/20 to-transparent absolute top-0">
+        </div>
+
         <!-- Tech Floating Symbols -->
         <div class="absolute inset-0 tech-floating-symbols">
             <span class="tech-symbol" style="left: 10%; animation-delay: 0s;">{ }</span>
@@ -95,7 +127,8 @@
         aria-label="Main navigation">
         <!-- Logo -->
         <div class="flex items-center gap-3 mb-12 px-2 group cursor-default">
-            <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/30 group-hover:rotate-12 transition-transform">
+            <div
+                class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/30 group-hover:rotate-12 transition-transform">
                 <i data-lucide="activity" class="text-white w-6 h-6"></i>
             </div>
             <div>
@@ -105,12 +138,14 @@
                 <div class="h-1 w-full bg-gradient-to-r from-brand-500 to-transparent rounded-full mt-1"></div>
             </div>
         </div>
-        
+
         <!-- Role Switcher -->
         <div class="mb-8 px-2">
-            <label class="text-[9px] uppercase tracking-[0.2em] text-slate-400 font-black mb-3 block opacity-60">Role Identity</label>
+            <label class="text-[9px] uppercase tracking-[0.2em] text-slate-400 font-black mb-3 block opacity-60">Role
+                Identity</label>
             <div class="relative group">
-                <select id="roleSelector" class="w-full bg-slate-500/5 dark:bg-white/5 border border-slate-500/10 dark:border-white/10 rounded-xl px-4 py-3 text-xs font-bold dark:text-white text-slate-800 appearance-none cursor-pointer focus:outline-none focus:border-brand-500/50 transition-all">
+                <select id="roleSelector"
+                    class="w-full bg-slate-500/5 dark:bg-white/5 border border-slate-500/10 dark:border-white/10 rounded-xl px-4 py-3 text-xs font-bold dark:text-white text-slate-800 appearance-none cursor-pointer focus:outline-none focus:border-brand-500/50 transition-all">
                     <option value="exec">Executive (Admin)</option>
                     <option value="market">Marketing Lead</option>
                     <option value="inv">Inventory Manager</option>
@@ -123,20 +158,22 @@
 
         <nav class="flex flex-col gap-2 flex-1" id="mainNav">
             {% set nav_items = [
-                ('/', 'layout-dashboard', 'Overview', 'all'),
-                ('/sales', 'bar-chart-3', 'Sales Analysis', 'all'),
-                ('/segments', 'users', 'Segments', 'market'),
-                ('/forecasting', 'trending-up', 'Forecasting', 'inv'),
-                ('/churn', 'alert-triangle', 'Churn', 'market'),
-                ('/inventory', 'package', 'Inventory', 'inv'),
-                ('/reports', 'file-text', 'Reports', 'all'),
-                ('/data', 'database', 'Data Center', 'all'),
+            ('/', 'layout-dashboard', 'Overview', 'all'),
+            ('/sales', 'bar-chart-3', 'Sales Analysis', 'all'),
+            ('/segments', 'users', 'Segments', 'market'),
+            ('/forecasting', 'trending-up', 'Forecasting', 'inv'),
+            ('/churn', 'alert-triangle', 'Churn', 'market'),
+            ('/inventory', 'package', 'Inventory', 'inv'),
+            ('/reports', 'file-text', 'Reports', 'all'),
+            ('/data', 'database', 'Data Center', 'all'),
             ] %}
             {% for href, icon, label, role in nav_items %}
-            <a href="{{ href }}" data-role="{{ role }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 group
+            <a href="{{ href }}" data-role="{{ role }}"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 group
                       {{ 'bg-brand-500 text-white shadow-lg shadow-brand-500/30' if request.path == href else 'dark:text-slate-400 text-slate-600 hover:bg-brand-500/10 hover:text-brand-500' }}"
-               {% if request.path==href %}aria-current="page" {% endif %}>
-                <i data-lucide="{{ icon }}" class="w-5 h-5 {{ 'text-white' if request.path == href else 'group-hover:text-brand-500' }}"></i>
+                {% if request.path==href %}aria-current="page" {% endif %}>
+                <i data-lucide="{{ icon }}"
+                    class="w-5 h-5 {{ 'text-white' if request.path == href else 'group-hover:text-brand-500' }}"></i>
                 {{ label }}
             </a>
             {% endfor %}
@@ -145,7 +182,8 @@
             <div class="mt-8 px-2">
                 <div class="glass-card p-4 bg-slate-500/5 border-slate-500/10">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-[9px] uppercase tracking-widest font-black text-slate-500">Dataset Status</span>
+                        <span class="text-[9px] uppercase tracking-widest font-black text-slate-500">Dataset
+                            Status</span>
                         <i data-lucide="activity" class="w-3 h-3 text-brand-500"></i>
                     </div>
                     <div class="flex items-center gap-2">
@@ -180,14 +218,15 @@
     </aside>
 
     <!-- Mobile Navigation -->
-    <nav class="lg:hidden fixed bottom-4 left-4 right-4 z-50 glass-card px-4 py-3 border-none shadow-2xl" role="navigation">
+    <nav class="lg:hidden fixed bottom-4 left-4 right-4 z-50 glass-card px-4 py-3 border-none shadow-2xl"
+        role="navigation">
         <div class="flex justify-around items-center">
             {% set mobile_nav = [
-                ('/', 'layout-dashboard', 'Home'),
-                ('/forecasting', 'trending-up', 'Forecast'),
-                ('/segments', 'users', 'Segments'),
-                ('/churn', 'alert-triangle', 'Churn'),
-                ('/reports', 'file-text', 'Reports'),
+            ('/', 'layout-dashboard', 'Home'),
+            ('/forecasting', 'trending-up', 'Forecast'),
+            ('/segments', 'users', 'Segments'),
+            ('/churn', 'alert-triangle', 'Churn'),
+            ('/reports', 'file-text', 'Reports'),
             ] %}
             {% for href, icon, label in mobile_nav %}
             <a href="{{ href }}"
@@ -200,22 +239,39 @@
         </div>
     </nav>
 
-    <!-- Theme Toggle -->
-    <button @click="darkMode = !darkMode" class="fixed top-6 right-6 z-50 w-12 h-12 rounded-2xl glass-card flex items-center justify-center
-                hover:scale-110 active:scale-95 transition-all duration-300 group"
-        aria-label="Toggle theme">
-        <i x-show="!darkMode" data-lucide="moon" class="w-5 h-5 text-brand-500 group-hover:rotate-12 transition-transform"></i>
-        <i x-show="darkMode" data-lucide="sun" class="w-5 h-5 text-yellow-400 group-hover:rotate-45 transition-transform"></i>
+    <!-- Mobile Header -->
+    <header class="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800/50 p-4 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center shadow-lg shadow-brand-500/30">
+                <i data-lucide="activity" class="text-white w-4 h-4"></i>
+            </div>
+            <h1 class="text-lg font-black dark:text-white text-slate-800 tracking-tighter">
+                Retail<span class="text-brand-500">Pulse</span>
+            </h1>
+        </div>
+        <button @click="darkMode = !darkMode" class="w-10 h-10 rounded-xl glass-card flex items-center justify-center active:scale-95 transition-all" aria-label="Toggle theme">
+            <i x-show="!darkMode" data-lucide="moon" class="w-4 h-4 text-brand-500"></i>
+            <i x-show="darkMode" data-lucide="sun" class="w-4 h-4 text-yellow-400"></i>
+        </button>
+    </header>
+
+    <!-- Theme Toggle (Desktop) -->
+    <button @click="darkMode = !darkMode" class="hidden lg:flex fixed top-6 right-6 z-50 w-12 h-12 rounded-2xl glass-card items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 group" aria-label="Toggle theme">
+        <i x-show="!darkMode" data-lucide="moon"
+            class="w-5 h-5 text-brand-500 group-hover:rotate-12 transition-transform"></i>
+        <i x-show="darkMode" data-lucide="sun"
+            class="w-5 h-5 text-yellow-400 group-hover:rotate-45 transition-transform"></i>
     </button>
 
     <!-- Main Content -->
-    <main id="main-content" class="lg:ml-64 pb-28 lg:pb-8 p-4 sm:p-6 lg:p-8 min-h-screen flex flex-col">
+    <main id="main-content" class="lg:ml-64 px-4 sm:px-6 lg:px-8 pt-28 lg:pt-8 pb-28 lg:pb-8 min-h-screen flex flex-col">
         <div class="flex-1">
             {% block content %}{% endblock %}
         </div>
-        
+
         <!-- Global Footer -->
-        <footer class="mt-auto py-12 border-t border-slate-200 dark:border-slate-800/50 text-center animate-in" style="animation-delay: 0.8s">
+        <footer class="mt-auto py-12 border-t border-slate-200 dark:border-slate-800/50 text-center animate-in"
+            style="animation-delay: 0.8s">
             <p class="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-black mb-3">
                 Version 2.0 – Industry Edition • March 2026
             </p>
