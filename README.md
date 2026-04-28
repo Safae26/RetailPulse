@@ -166,5 +166,6 @@ RetailPulse is deployed and accessible online via **Render** — no local setup 
 5. **Access the application:** Open `http://localhost:5000` in your web browser.
 
 ---
+
 > **Done by Safae ERAJI under the supervision of Zidio Development** • March 2026  
 > **Submitted for:** Data Science & Analytics Domain
